@@ -1,4 +1,4 @@
-import { TodoItem } from "../models/TodoItem"
+import { NoteItem } from "../models/NoteItem"
 import { createLogger } from "../utils/logger"
 import * as AWSXRay from 'aws-xray-sdk'
 import * as AWS from 'aws-sdk'
@@ -6,20 +6,20 @@ import * as AWS from 'aws-sdk'
 const XAWS = AWSXRay.captureAWS(AWS)
 
 
-const logger = createLogger('deleteTodo')
+const logger = createLogger('deleteNote')
 
-const todosTable = process.env.TODOS_TABLE
+const notesTable = process.env.NOTES_TABLE
 const userIdIndex = process.env.USER_ID_INDEX
 const bucketName = process.env.ATTACHMENTS_S3_BUCKET
 
 const docClient = createDynamoDBClient();
 
-export async function getTodoById(todoId: string): Promise<TodoItem> {
+export async function getNoteById(noteId: string): Promise<NoteItem> {
   const result = await docClient
     .get({
-      TableName: todosTable,
+      TableName: notesTable,
       Key: {
-        todoId
+        noteId
       }
     })
     .promise()
@@ -27,10 +27,10 @@ export async function getTodoById(todoId: string): Promise<TodoItem> {
   return result.Item
 }
 
-export async function getAllTodos(userId: string): Promise<TodoItem[]> {
+export async function getAllNotes(userId: string): Promise<NoteItem[]> {
 
   const result = await docClient.query({
-    TableName: todosTable,
+    TableName: notesTable,
     IndexName: userIdIndex,
     KeyConditionExpression: "userId = :userId",
     ExpressionAttributeValues: {
@@ -42,48 +42,48 @@ export async function getAllTodos(userId: string): Promise<TodoItem[]> {
   return items
 }
 
-export async function createTodo(todoItem: TodoItem): Promise<TodoItem> {
+export async function createNote(noteItem: NoteItem): Promise<NoteItem> {
 
   await docClient.put({
-    TableName: todosTable,
-    Item: todoItem
+    TableName: notesTable,
+    Item: noteItem
   }).promise()
 
-  return todoItem
+  return noteItem
 }
 
-export async function deleteTodo(todoId: string): Promise<any> {
+export async function deleteNote(noteId: string): Promise<any> {
 
   await docClient.delete({
-    TableName: todosTable,
+    TableName: notesTable,
     Key: {
-      todoId
+      noteId
     }
   }).promise()
 
-  return { todoId }
+  return { noteId }
 }
 
-export async function updateTodo(todoId: string, userId: string, todoItem: TodoItem): Promise<any> {
-  const prevTodo = await getTodoById(todoId);
-  logger.info("updating", { prevTodo, userId })
+export async function updateNote(noteId: string, userId: string, noteItem: NoteItem): Promise<any> {
+  const prevNote = await getNoteById(noteId);
+  logger.info("updating", { prevNote, userId })
 
-  if (prevTodo.userId !== userId) return;
+  if (prevNote.userId !== userId) return;
 
-  if (todoItem.attachmentName) {
-    todoItem.attachmentUrl = `https://${bucketName}.s3.amazonaws.com/${todoId}/${todoItem.attachmentName}`
+  if (noteItem.attachmentName) {
+    noteItem.attachmentUrl = `https://${bucketName}.s3.amazonaws.com/${noteId}/${noteItem.attachmentName}`
   }
 
   await docClient.put({
-    TableName: todosTable,
+    TableName: notesTable,
     Item: {
-      ...prevTodo,
-      ...todoItem,
-      todoId: todoId,
+      ...prevNote,
+      ...noteItem,
+      noteId,
     }
   }).promise()
 
-  return { todoId }
+  return { noteId }
 }
 
 export function createDynamoDBClient() {

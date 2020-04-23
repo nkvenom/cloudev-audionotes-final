@@ -16,13 +16,13 @@ const logger = createLogger('generateUploadUrl')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info({ event })
-  const todoId = event.pathParameters.todoId
+  const { noteId } = event.pathParameters
   const { attachmentName } = JSON.parse(event.body)
-  console.log("todoId", todoId)
+  console.log("noteId", noteId)
 
   const uploadUrl = s3.getSignedUrl('putObject', {
     Bucket: bucketName,
-    Key: `${todoId}/${attachmentName}`,
+    Key: `${noteId}/${attachmentName}`,
     Expires: parseInt(urlExpiration) || 120 // expires units in seconds
   })
 
@@ -31,6 +31,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     headers: {
       'Access-Control-Allow-Origin': '*'
     },
-    body: JSON.stringify({ uploadUrl, todoId })
+    body: JSON.stringify({ uploadUrl, noteId })
   }
 }

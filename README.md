@@ -13,7 +13,7 @@ The application should store TODO items, and each TODO item contains the followi
 * `todoId` (string) - a unique id for an item
 * `createdAt` (string) - date and time when an item was created
 * `name` (string) - name of a TODO item (e.g. "Change a light bulb")
-* `dueDate` (string) - date and time by which an item should be completed
+* `createdAt` (string) - date and time by which an item should be completed
 * `done` (boolean) - true if an item was completed, false otherwise
 * `attachmentUrl` (string) (optional) - a URL pointing to an image attached to a TODO item
 
@@ -37,7 +37,7 @@ It should return data that looks like this:
       "todoId": "123",
       "createdAt": "2019-07-27T20:01:45.424Z",
       "name": "Buy milk",
-      "dueDate": "2019-07-29T20:01:45.424Z",
+      "createdAt": "2019-07-29T20:01:45.424Z",
       "done": false,
       "attachmentUrl": "http://example.com/image.png"
     },
@@ -45,7 +45,7 @@ It should return data that looks like this:
       "todoId": "456",
       "createdAt": "2019-07-27T20:01:45.424Z",
       "name": "Send a letter",
-      "dueDate": "2019-07-29T20:01:45.424Z",
+      "createdAt": "2019-07-29T20:01:45.424Z",
       "done": true,
       "attachmentUrl": "http://example.com/image.png"
     },
@@ -61,7 +61,7 @@ It receives a new TODO item to be created in JSON format that looks like this:
 {
   "createdAt": "2019-07-27T20:01:45.424Z",
   "name": "Buy milk",
-  "dueDate": "2019-07-29T20:01:45.424Z",
+  "createdAt": "2019-07-29T20:01:45.424Z",
   "done": false,
   "attachmentUrl": "http://example.com/image.png"
 }
@@ -75,7 +75,7 @@ It should return a new TODO item that looks like this:
     "todoId": "123",
     "createdAt": "2019-07-27T20:01:45.424Z",
     "name": "Buy milk",
-    "dueDate": "2019-07-29T20:01:45.424Z",
+    "createdAt": "2019-07-29T20:01:45.424Z",
     "done": false,
     "attachmentUrl": "http://example.com/image.png"
   }
@@ -89,7 +89,7 @@ It receives an object that contains three fields that can be updated in a TODO i
 ```json
 {
   "name": "Buy bread",
-  "dueDate": "2019-07-29T20:01:45.424Z",
+  "createdAt": "2019-07-29T20:01:45.424Z",
   "done": true
 }
 ```

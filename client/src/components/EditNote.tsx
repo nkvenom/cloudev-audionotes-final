@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import Auth from '../auth/Auth'
-import { getUploadUrl, uploadFile, patchTodo } from '../api/todos-api'
+import { getUploadUrl, uploadFile, patchNote } from '../api/notes-api'
 
 enum UploadState {
   NoUpload,
@@ -9,25 +9,25 @@ enum UploadState {
   UploadingFile,
 }
 
-interface EditTodoProps {
+interface EditNoteProps {
   match: {
     params: {
-      todoId: string
+      noteId: string
     }
   }
   auth: Auth
 }
 
-interface EditTodoState {
+interface EditNoteState {
   file: any
   uploadState: UploadState
 }
 
-export class EditTodo extends React.PureComponent<
-  EditTodoProps,
-  EditTodoState
+export class EditNote extends React.PureComponent<
+  EditNoteProps,
+  EditNoteState
   > {
-  state: EditTodoState = {
+  state: EditNoteState = {
     file: undefined,
     uploadState: UploadState.NoUpload
   }
@@ -54,11 +54,11 @@ export class EditTodo extends React.PureComponent<
 
       this.setUploadState(UploadState.FetchingPresignedUrl)
       const attachmentName = this.state.file.name
-      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.todoId, attachmentName)
+      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.noteId, attachmentName)
 
       this.setUploadState(UploadState.UploadingFile)
       await uploadFile(uploadUrl, this.state.file)
-      await patchTodo(this.props.auth.getIdToken(), this.props.match.params.todoId, {
+      await patchNote(this.props.auth.getIdToken(), this.props.match.params.noteId, {
         attachmentName
       })
 

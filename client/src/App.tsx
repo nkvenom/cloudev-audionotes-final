@@ -3,10 +3,10 @@ import { Link, Route, Router, Switch } from 'react-router-dom'
 import { Grid, Menu, Segment } from 'semantic-ui-react'
 
 import Auth from './auth/Auth'
-import { EditTodo } from './components/EditTodo'
+import { EditNote } from './components/EditNote'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
-import { Todos } from './components/Todos'
+import { Notes } from './components/Notes'
 
 export interface AppProps {}
 
@@ -20,16 +20,13 @@ export interface AppState {}
 export default class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props)
-
-    this.handleLogin = this.handleLogin.bind(this)
-    this.handleLogout = this.handleLogout.bind(this)
   }
 
-  handleLogin() {
+  handleLogin = () => {
     this.props.auth.login()
   }
 
-  handleLogout() {
+  handleLogout = () => {
     this.props.auth.logout()
   }
 
@@ -92,15 +89,15 @@ export default class App extends Component<AppProps, AppState> {
           path="/"
           exact
           render={props => {
-            return <Todos {...props} auth={this.props.auth} />
+            return <Notes {...props} auth={this.props.auth} />
           }}
         />
 
         <Route
-          path="/todos/:todoId/edit"
+          path="/notes/:noteId/edit"
           exact
           render={props => {
-            return <EditTodo {...props} auth={this.props.auth} />
+            return <EditNote {...props} auth={this.props.auth} />
           }}
         />
 
