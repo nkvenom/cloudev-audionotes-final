@@ -1,5 +1,5 @@
 service:
-  name: c4-audionotes-app
+  name: c4-audionotes-lol
 
 plugins:
   - serverless-webpack
@@ -9,7 +9,7 @@ plugins:
 provider:
   tracing:
     lambda: true
-    ApiGateway: true
+    apiGateway: true
 
   name: aws
   runtime: nodejs12.x
@@ -20,7 +20,8 @@ provider:
   environment:
     NOTES_TABLE: Notes-${self:provider.stage}
     USER_ID_INDEX: UserIdIndex
-    ATTACHMENTS_S3_BUCKET: cd-final-notes-${self:provider.stage}
+    ATTACHMENTS_S3_BUCKET: cd-audio-notes-${self:provider.stage}
+    TRANSCRIPTION_S3_BUCKET: cd-transcription-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
   iamRoleStatements:
     - Effect: Allow
@@ -209,6 +210,25 @@ resources:
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENTS_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
+
+    TranscriptionBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.TRANSCRIPTION_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
 
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
