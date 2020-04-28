@@ -22,6 +22,7 @@ provider:
     USER_ID_INDEX: UserIdIndex
     ATTACHMENTS_S3_BUCKET: cd-audio-notes-${self:provider.stage}
     TRANSCRIPTION_S3_BUCKET: cd-transcription-${self:provider.stage}
+    LANGUAGE_CODE: en-US
     SIGNED_URL_EXPIRATION: 300
   iamRoleStatements:
     - Effect: Allow
@@ -139,6 +140,31 @@ functions:
           - xray:PutTelemetryRecords
         Resource: "*"
 
+  TranscribeNote:
+    handler: src/lambda/http/transcribeNote.handler
+    events:
+      - s3:
+          bucket: ${self:provider.environment.ATTACHMENTS_S3_BUCKET}
+          event: s3:ObjectCreated:*
+          existing: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENTS_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: arn:aws:s3:::${self:provider.environment.TRANSCRIPTION_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - transcribe:StartTranscriptionJob
+        Resource: '*'        
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
 
 resources:
   Resources:
