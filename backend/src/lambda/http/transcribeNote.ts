@@ -13,6 +13,7 @@ const audioBucket = process.env.ATTACHMENTS_S3_BUCKET
 export const handler: S3Handler = async (event: S3Event): Promise<void> => {
   const records = event.Records
 
+  logger.error('processing', { records: records.length })
   for (const rec of records) {
     const [noteId, fName] = rec.s3.object.key.split('/')
     const recordUrl = `https://s3.amazonaws.com/${
@@ -28,11 +29,14 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
     const [mediaFormat] = VALID_EXT_REGEXP.exec(fName)
     logger.info({ rec, recordUrl })
 
+    const dateSuffix = new Date().toISOString().replace(/:/g, '');
+    logger.info({ dateSuffix })
+
     const transcribeParams = {
       LanguageCode: process.env.LANGUAGE_CODE,
       Media: { MediaFileUri: recordUrl },
       MediaFormat: mediaFormat,
-      TranscriptionJobName: noteId,
+      TranscriptionJobName: `${noteId}-${dateSuffix}`,
       OutputBucketName: transcriptionBucket,
     }
 
