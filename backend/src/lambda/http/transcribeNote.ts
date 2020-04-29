@@ -36,7 +36,7 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
       LanguageCode: process.env.LANGUAGE_CODE,
       Media: { MediaFileUri: recordUrl },
       MediaFormat: mediaFormat,
-      TranscriptionJobName: `${noteId}-${dateSuffix}`,
+      TranscriptionJobName: `${noteId}_${dateSuffix}`,
       OutputBucketName: transcriptionBucket,
     }
 

@@ -159,7 +159,33 @@ functions:
       - Effect: Allow
         Action:
           - transcribe:StartTranscriptionJob
-        Resource: '*'        
+        Resource: '*'
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
+
+  TranscriptionToNote:
+    handler: src/lambda/http/transcriptionToNote.handler
+    events:
+      - s3:
+          bucket: ${self:provider.environment.TRANSCRIPTION_S3_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .json
+          existing: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.NOTES_TABLE}
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.TRANSCRIPTION_S3_BUCKET}/*
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
