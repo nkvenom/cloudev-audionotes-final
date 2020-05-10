@@ -86,6 +86,22 @@ export async function updateNote(noteId: string, userId: string, noteItem: NoteI
   return { noteId }
 }
 
+
+export async function updateNoteAny(noteId: string, noteItem: any): Promise<any> {
+  const prevNote = await getNoteById(noteId);
+
+  await docClient.put({
+    TableName: notesTable,
+    Item: {
+      ...prevNote,
+      ...noteItem,
+      noteId,
+    }
+  }).promise()
+
+  return { noteId }
+}
+
 export function createDynamoDBClient() {
   if (process.env.IS_OFFLINE) {
     console.log('Creating a local DynamoDB instance')

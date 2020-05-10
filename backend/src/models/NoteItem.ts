@@ -6,4 +6,5 @@ export interface NoteItem {
   done: boolean
   attachmentUrl?: string
   attachmentName?: string
+  description?: string
 }

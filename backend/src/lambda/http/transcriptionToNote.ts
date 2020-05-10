@@ -3,6 +3,7 @@ import 'source-map-support/register'
 import { createLogger } from '../../utils/logger'
 import * as AWSXRay from 'aws-xray-sdk'
 import * as AWS from 'aws-sdk'
+import { updateNoteAny } from '../../dataLayer/noteAccess'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const s3 = new XAWS.S3()
@@ -30,9 +31,14 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
       Key: rec.s3.object.key
     }
 
-    logger.info("params", { params })
     const fContents = await s3.getObject(params).promise()
-    logger.info("fContents", { daproto: Object.getPrototypeOf(fContents.Body).constructor.name, json: fContents.Body.toString('utf8') })
+
+    const transcriptJson = JSON.parse(fContents.Body.toString('utf8'))
+    const description = transcriptJson.results.transcripts.map(t => t.transcript).join('\n')
+
+    logger.info("updating", { noteId })
+    await updateNoteAny(noteId, { description })
+
   } catch (error) {
     console.log(error);
     return;
