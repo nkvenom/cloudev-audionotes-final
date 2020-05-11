@@ -14,7 +14,7 @@ The serverless functions are already uploaded and running, so you must start `np
 
 # Note items
 
-The application should stores Note items, and each Note item contains the following fields:
+The application stores Note items, and each Note item contains the following fields:
 
 * `noteId` (string) - a unique id for an item
 * `userId` (string) - the id of the user that this note belongs to
@@ -32,9 +32,9 @@ To implement this project, you need to implement the following functions and con
 
 * `Authorizer3000` - this function implements a custom authorizer for API Gateway that is referenced in all other functions.
 
-* `GetNotes` - should return all Notes for a current user. A user id can be extracted from a JWT token that is sent by the frontend
+* `GetNotes` - return all Notes for a current user. A user id can be extracted from a JWT token that is sent by the frontend
 
-It should return data that looks like this:
+It returns data that looks like this:
 
 ```json
 {
@@ -62,7 +62,7 @@ It should return data that looks like this:
 }
 ```
 
-* `CreateNote` - should create a new Note for the current user. A shape of data send by a client application to this function can be found in the `CreateNoteRequest.ts` file
+* `CreateNote` - creates a new Note for the current user. A shape of data send by a client application to this function can be found in the `CreateNoteRequest.ts` file
 
 It receives a new Note item to be created in JSON format that looks like this:
 
@@ -72,7 +72,7 @@ It receives a new Note item to be created in JSON format that looks like this:
 }
 ```
 
-It should return a new Note item that looks like this:
+It returns a new Note item that looks like this:
 
 ```json
 {
@@ -84,7 +84,7 @@ It should return a new Note item that looks like this:
 }
 ```
 
-* `UpdateNote` - should update a Note item created by a current user. A shape of data send by a client application to this function can be found in the `UpdateNoteRequest.ts` file
+* `UpdateNote` - update a Note item created by the current user. A shape of data send by a client application to this function can be found in the `UpdateNoteRequest.ts` file
 
 It receives an object that contains three fields that can be updated in a Note item:
 
@@ -96,13 +96,13 @@ It receives an object that contains three fields that can be updated in a Note i
 }
 ```
 
-The id of an item that should be updated is passed as a URL parameter.
+The id of an item that be updated is passed as a URL parameter.
 
-It should return an empty body.
+It returns an empty body.
 
 * `DeleteNote` - should delete a Note item created by a current user. Expects an id of a Note item to remove.
 
-It should return an empty body.
+It returns an empty body.
 
 * `GenerateUploadUrl` - returns a pre-signed URL that can be used to upload an attachment file for a Note item.
 
