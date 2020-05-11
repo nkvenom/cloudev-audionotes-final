@@ -1,10 +1,16 @@
 # SLS Audio Notes
 
-Simple Serverless framework App based on the Note App that allows users to record audio or upload a file and see the transcribed data.
+Simple Serverless framework App based on the Note App that allows users to record audio or upload a file and see the transcribed text.
+
+![Application running on port 3000](images/audionotes-sshot.png?raw=true)
+
 
 # Functionality of the application
 
-The application allows the user to create, edit and delete audio notes.
+The application allows the user to create, edit and delete audio notes. When the user edits a Note can attach an audio file that will be automatically transcribed.
+
+# Using the application
+The serverless functions are already uploaded and running, so you must start `npm start` from the `client/` folder that is already configured to connect to the API.
 
 # Note items
 
@@ -24,7 +30,7 @@ The application should stores Note items, and each Note item contains the follow
 
 To implement this project, you need to implement the following functions and configure them in the `serverless.yml` file:
 
-* `Auth` - this function should implement a custom authorizer for API Gateway that should be added to all other functions.
+* `Authorizer3000` - this function implements a custom authorizer for API Gateway that is referenced in all other functions.
 
 * `GetNotes` - should return all Notes for a current user. A user id can be extracted from a JWT token that is sent by the frontend
 
