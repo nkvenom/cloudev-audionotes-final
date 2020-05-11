@@ -1,5 +1,5 @@
 service:
-  name: c4-audionotes-lol
+  name: sls-anotes
 
 plugins:
   - serverless-webpack

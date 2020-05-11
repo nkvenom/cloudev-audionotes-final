@@ -5,4 +5,5 @@ export interface Note {
   done: boolean
   attachmentUrl?: string
   attachmentName?: string
+  description?: string;
 }

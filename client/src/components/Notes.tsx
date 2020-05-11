@@ -132,7 +132,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
         <Grid.Column width={16}>
           <Input
             action={{
-              color: 'teal',
+              color: 'linkedin',
               labelPosition: 'left',
               icon: 'add',
               content: 'New Note',
@@ -216,6 +216,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
               {note.attachmentName && (this.isImage(note.attachmentName) || console.log(this.isImage(note.attachmentName))) && (
                 <Image src={note.attachmentUrl} size="small" wrapped />
               )}
+              {note.description && <div><h3>Transcription</h3><p>{note.description}</p></div>}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>
