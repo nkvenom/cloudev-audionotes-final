@@ -5,6 +5,7 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
+  - serverless-offline 
 
 provider:
   tracing:
