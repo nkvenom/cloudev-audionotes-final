@@ -15,10 +15,9 @@ const s3 = new XAWS.S3({
 const logger = createLogger('generateUploadUrl')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  logger.info({ event })
   const { noteId } = event.pathParameters
+  logger.info({ noteId })
   const { attachmentName } = JSON.parse(event.body)
-  console.log("noteId", noteId)
 
   const uploadUrl = s3.getSignedUrl('putObject', {
     Bucket: bucketName,
