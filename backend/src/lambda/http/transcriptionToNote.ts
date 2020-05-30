@@ -37,7 +37,7 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
     const description = transcriptJson.results.transcripts.map(t => t.transcript).join('\n')
 
     logger.info("updating", { noteId })
-    await updateNoteAny(noteId, { description })
+    await updateNoteAny(noteId, { description, transcriptJson })
 
   } catch (error) {
     console.log(error);
