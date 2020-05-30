@@ -10,13 +10,13 @@ import {
   Header,
   Icon,
   Input,
-  Image,
   Loader
 } from 'semantic-ui-react'
 
 import { createNote as createNote, deleteNote, getNotes, patchNote } from '../api/notes-api'
 import Auth from '../auth/Auth'
 import { Note } from '../types/Note'
+import { Link } from 'react-router-dom'
 
 interface NotesProps {
   auth: Auth
@@ -36,21 +36,11 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
     loading: true
   }
 
-
-  isImage = (fName: string): boolean => {
-    if (!fName) return false
-    if (fName.endsWith('.jpg') || fName.endsWith('.jpeg') || fName.endsWith('.png')) {
-      return true
-    }
-
-    return false
-  }
-
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ newNoteName: event.target.value })
   }
 
-  onEditButtonClick = (noteId: string) => {
+  onEditButtonClick = (noteId: string, note: Note) => {
     this.props.history.push(`/notes/${noteId}/edit`)
   }
 
@@ -196,13 +186,17 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                 }
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="blue"
-                  onClick={() => this.onEditButtonClick(note.noteId)}
+                <Link 
+                  to={{
+                    pathname: `/notes/${note.noteId}/edit`,
+                    state: {
+                      note
+                    }
+                  }}
                 >
                   <Icon name="pencil" />
-                </Button>
+                  Edit2
+                </Link> 
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -213,9 +207,6 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {note.attachmentName && (this.isImage(note.attachmentName) || console.log(this.isImage(note.attachmentName))) && (
-                <Image src={note.attachmentUrl} size="small" wrapped />
-              )}
               {note.description && <div><h3>Transcription</h3><p>{note.description}</p></div>}
               <Grid.Column width={16}>
                 <Divider />

@@ -3,6 +3,7 @@ import { Button, Form, Icon } from 'semantic-ui-react'
 import { getUploadUrl, patchNote, uploadFile } from '../api/notes-api'
 import Auth from '../auth/Auth'
 import MicRecorder from 'mic-recorder-to-mp3'
+import { Note } from '../types/Note'
 
 
 enum UploadState {
@@ -18,6 +19,7 @@ interface EditNoteProps {
     }
   }
   auth: Auth
+  location: any
 }
 
 interface EditNoteState {
@@ -27,6 +29,7 @@ interface EditNoteState {
   isRecording: boolean
   blobURL: string
   recordedFile: any
+  note?: Note
 }
 
 export class EditNote extends React.PureComponent<
@@ -41,17 +44,20 @@ export class EditNote extends React.PureComponent<
     isRecording: false,
     blobURL: '',
     recordedFile: null,
+    note: undefined,
   }
 
   async componentDidMount() {
-    this.getMedia({ audio: true })
+    this.setState({
+      note: this.props.location.state.note 
+    })
   }
 
   async getMedia(constraints: any) {
     console.log("Getting permissions to use Mic")
 
     try {
-      await navigator.mediaDevices.getUserMedia(constraints);
+      await navigator.mediaDevices.getUserMedia(constraints)
       this.setState({ isAllowedAudio: true })
     } catch (err) {
       alert('Can\'t get audio permission')
@@ -67,7 +73,7 @@ export class EditNote extends React.PureComponent<
 
     try {
       await this.micRecorder.start()
-      this.setState({ isRecording: true });
+      this.setState({ isRecording: true })
     }
     catch (e) {
       console.error(e)
@@ -76,11 +82,6 @@ export class EditNote extends React.PureComponent<
 
   handleStopRecording = async () => {
     console.log('Stopped recording')
-
-    if (!this.state.isAllowedAudio) {
-      alert('Can\'t get permissions to Record Audio');
-      return;
-    }
 
     if (!this.state.isRecording) {
       return;
@@ -145,6 +146,7 @@ export class EditNote extends React.PureComponent<
   }
 
   render() {
+    const { note } = this.state
     return (
       <div>
         <h1>Record a New Note</h1>
@@ -175,6 +177,10 @@ export class EditNote extends React.PureComponent<
           </div>
         </div>
 
+        <h2>Curr Transcription</h2>
+        <p>
+          {note && note.description}
+        </p>
 
         <h2>Or Upload an Audio File</h2>
         <Form onSubmit={this.handleSubmit}>
@@ -182,8 +188,8 @@ export class EditNote extends React.PureComponent<
             <label>Upload a File</label>
             <input
               type="file"
-              accept=".mp3,.ogg, audio/*"
-              placeholder="Image to upload"
+              accept=".mp3,.ogg,.mp4,.ogg"
+              placeholder="Audio File to upload"
               onChange={this.handleFileChange}
             />
           </Form.Field>
@@ -199,7 +205,7 @@ export class EditNote extends React.PureComponent<
 
     return (
       <div>
-        {this.state.uploadState === UploadState.FetchingPresignedUrl && <p>Uploading image metadata</p>}
+        {this.state.uploadState === UploadState.FetchingPresignedUrl && <p>Uploading file metadata</p>}
         {this.state.uploadState === UploadState.UploadingFile && <p>Uploading file</p>}
         <Button
           loading={this.state.uploadState !== UploadState.NoUpload}
