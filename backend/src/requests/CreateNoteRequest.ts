@@ -4,4 +4,5 @@
 export interface CreateNoteRequest {
   name: string
   createdAt: string
+  language: string
 }

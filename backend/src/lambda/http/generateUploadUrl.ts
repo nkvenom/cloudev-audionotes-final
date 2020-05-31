@@ -16,14 +16,14 @@ const logger = createLogger('generateUploadUrl')
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const { noteId } = event.pathParameters
-  logger.info({ noteId })
-  const { attachmentName } = JSON.parse(event.body)
+  const { attachmentName, language } = JSON.parse(event.body)
 
   const uploadUrl = s3.getSignedUrl('putObject', {
     Bucket: bucketName,
-    Key: `${noteId}/${attachmentName}`,
+    Key: `${noteId}/${language}/${attachmentName}`,
     Expires: parseInt(urlExpiration) || 120 // expires units in seconds
   })
+  logger.info('datas', { noteId, attachmentName, language })
 
   return {
     statusCode: 200,

@@ -61,12 +61,16 @@ export async function deleteNote(
 export async function getUploadUrl(
   idToken: string,
   noteId: string,
-  attachmentName: string
+  attachmentName: string,
+  language: string
 ): Promise<string> {
   const response = await Axios.post(`${apiEndpoint}/notes/${noteId}/attachment`, { attachmentName }, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
+    },
+    data: {
+      language
     }
   })
   return response.data.uploadUrl

@@ -2,21 +2,12 @@ import dateFormat from 'dateformat'
 import { History } from 'history'
 import update from 'immutability-helper'
 import * as React from 'react'
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Grid,
-  Header,
-  Icon,
-  Input,
-  Loader
-} from 'semantic-ui-react'
-
+import { Link } from 'react-router-dom'
+import { Button, Checkbox, Divider, Grid, Header, Icon, Input, Loader } from 'semantic-ui-react'
 import { createNote as createNote, deleteNote, getNotes, patchNote } from '../api/notes-api'
 import Auth from '../auth/Auth'
 import { Note } from '../types/Note'
-import { Link } from 'react-router-dom'
+
 
 interface NotesProps {
   auth: Auth
@@ -53,6 +44,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
       }
       const newNote = await createNote(this.props.auth.getIdToken(), {
         name: this.state.newNoteName,
+        language: 'en-US'
       })
       this.setState({
         notes: [...this.state.notes, newNote],
@@ -71,24 +63,6 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
       })
     } catch {
       alert('Note deletion failed')
-    }
-  }
-
-  onNoteCheck = async (pos: number) => {
-    try {
-      const note = this.state.notes[pos]
-      await patchNote(this.props.auth.getIdToken(), note.noteId, {
-        name: note.name,
-        createdAt: note.createdAt,
-        done: !note.done
-      })
-      this.setState({
-        notes: update(this.state.notes, {
-          [pos]: { done: { $set: !note.done } }
-        })
-      })
-    } catch {
-      alert('Note check failed')
     }
   }
 
@@ -118,27 +92,31 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
 
   renderCreateNoteInput() {
     return (
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Input
-            action={{
-              color: 'linkedin',
-              labelPosition: 'left',
-              icon: 'add',
-              content: 'New Note',
-              onClick: this.onNoteCreate
-            }}
-            fluid
-            actionPosition="left"
-            placeholder="Someting somethin"
-            value={this.state.newNoteName}
-            onChange={this.handleNameChange}
-          />
-        </Grid.Column>
-        <Grid.Column width={16}>
-          <Divider />
-        </Grid.Column>
-      </Grid.Row>
+      <>
+        <Grid.Row>
+          <Grid.Column width={9}>
+            <Input
+              action={{
+                color: 'linkedin',
+                labelPosition: 'left',
+                icon: 'add',
+                content: 'New Note',
+                onClick: this.onNoteCreate
+              }}
+              fluid
+              actionPosition="left"
+              placeholder="Someting somethin"
+              value={this.state.newNoteName}
+              onChange={this.handleNameChange}
+            />
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={16}>
+            <Divider />
+          </Grid.Column>
+        </Grid.Row>
+      </>
     )
   }
 
@@ -166,13 +144,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
         {this.state.notes.map((note, pos) => {
           return (
             <Grid.Row key={note.noteId}>
-              <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onNoteCheck(pos)}
-                  checked={note.done}
-                />
-              </Grid.Column>
-              <Grid.Column width={9} verticalAlign="middle">
+              <Grid.Column width={10} verticalAlign="middle">
                 {note.name}
               </Grid.Column>
               <Grid.Column width={3} floated="right">
@@ -186,7 +158,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                 }
               </Grid.Column>
               <Grid.Column width={1} floated="right">
-                <Link 
+                <Link
                   to={{
                     pathname: `/notes/${note.noteId}/edit`,
                     state: {
@@ -196,7 +168,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                 >
                   <Icon name="pencil" />
                   Edit2
-                </Link> 
+                </Link>
               </Grid.Column>
               <Grid.Column width={1} floated="right">
                 <Button
@@ -207,7 +179,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {note.description && <div><h3>Transcription</h3><p>{note.description}</p></div>}
+              {note.transcription && <div><h3>Transcription</h3><p>{note.transcription}</p></div>}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

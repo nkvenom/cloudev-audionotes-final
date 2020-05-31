@@ -1,10 +1,21 @@
+import MicRecorder from 'mic-recorder-to-mp3'
 import * as React from 'react'
-import { Button, Form, Icon } from 'semantic-ui-react'
+import { Button, DropdownProps, Form, Icon, Select } from 'semantic-ui-react'
 import { getUploadUrl, patchNote, uploadFile } from '../api/notes-api'
 import Auth from '../auth/Auth'
-import MicRecorder from 'mic-recorder-to-mp3'
 import { Note } from '../types/Note'
 
+const languageOptions = [
+  { text: 'English-US', value: 'en-US' },
+  { text: 'Spanish-US', value: 'es-US' },
+  { text: 'Spanish-Spain', value: 'es-ES' },
+  { text: 'English-GB', value: 'en-GB' },
+  { text: 'English-IN', value: 'en-IN' },
+  { text: 'English-IE', value: 'en-IE' },
+  { text: 'English-AB', value: 'en-AB' },
+  { text: 'English-WL', value: 'en-WL' },
+  { text: 'English-AU', value: 'en-AU' },
+]
 
 enum UploadState {
   NoUpload,
@@ -49,7 +60,7 @@ export class EditNote extends React.PureComponent<
 
   async componentDidMount() {
     this.setState({
-      note: this.props.location.state.note 
+      note: this.props.location.state.note
     })
   }
 
@@ -108,11 +119,24 @@ export class EditNote extends React.PureComponent<
     })
   }
 
+  onLangSelect = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps) => {
+    const language: string = data.value as string
+    console.log("onLangSelect -> language", language)
+    const { note } = this.state
+    if (!note) return;
+    this.setState({
+      note: {
+        ...note,
+        language
+      }
+    })
+  }
+
   handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault()
 
     try {
-      const { file } = this.state
+      const { file, note: { language = 'en-US' } = {} } = this.state
 
       if (!file && !this.state.blobURL) {
         alert('File should be selected or clip must be recorded')
@@ -121,14 +145,15 @@ export class EditNote extends React.PureComponent<
 
       this.setUploadState(UploadState.FetchingPresignedUrl)
       const attachmentName = file && file.name ? file.name : 'audio.mp3'
-      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.noteId, attachmentName)
+      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.noteId, attachmentName, language)
 
       this.setUploadState(UploadState.UploadingFile)
 
       console.log(file, this.state.recordedFile)
       await uploadFile(uploadUrl, file || this.state.recordedFile)
       await patchNote(this.props.auth.getIdToken(), this.props.match.params.noteId, {
-        attachmentName
+        attachmentName,
+        language
       })
 
       alert('File was uploaded!')
@@ -173,17 +198,28 @@ export class EditNote extends React.PureComponent<
 
           <div>
             {this.state.blobURL && !this.state.isRecording &&
-              <audio src={this.state.blobURL} controls={true} />}
+              <audio src={this.state.blobURL} controls />}
           </div>
         </div>
 
-        <h2>Curr Transcription</h2>
+        <h2>Transcription</h2>
         <p>
-          {note && note.description}
+          {note && note.transcription}
         </p>
 
         <h2>Or Upload an Audio File</h2>
         <Form onSubmit={this.handleSubmit}>
+          <Form.Field>
+            <label>Select Language {note && note.language}</label>
+            <Select
+              options={languageOptions}
+              value={note ? note.language : 'en-US'}
+              onChange={this.onLangSelect}
+              selectOnBlur
+              placeholder="Language"
+            />
+          </Form.Field>
+
           <Form.Field>
             <label>Upload a File</label>
             <input
@@ -194,26 +230,29 @@ export class EditNote extends React.PureComponent<
             />
           </Form.Field>
 
-          {this.renderButton()}
+          <SaveButton uploadState={this.state.uploadState} />
         </Form>
 
       </div>
     )
   }
+}
 
-  renderButton() {
+interface SaveButtonProps {
+  uploadState: UploadState
+}
 
-    return (
-      <div>
-        {this.state.uploadState === UploadState.FetchingPresignedUrl && <p>Uploading file metadata</p>}
-        {this.state.uploadState === UploadState.UploadingFile && <p>Uploading file</p>}
-        <Button
-          loading={this.state.uploadState !== UploadState.NoUpload}
-          type="submit"
-        >
-          Save
-        </Button>
-      </div>
-    )
-  }
+const SaveButton: React.SFC<SaveButtonProps> = (props) => {
+  return (
+    <div>
+      {props.uploadState === UploadState.FetchingPresignedUrl && <p>Uploading file metadata</p>}
+      {props.uploadState === UploadState.UploadingFile && <p>Uploading file</p>}
+      <Button
+        loading={props.uploadState !== UploadState.NoUpload}
+        type="submit"
+      >
+        Save
+      </Button>
+    </div>
+  )
 }

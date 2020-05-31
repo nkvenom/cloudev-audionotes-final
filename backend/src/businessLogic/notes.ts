@@ -25,10 +25,12 @@ export async function createNote(event: APIGatewayProxyEvent) {
   const userId = getUserIdFromAuthHeader(event.headers.Authorization)
 
   const newNote: CreateNoteRequest = JSON.parse(event.body)
+  logger.info({ newNote })
 
   return await access.createNote({
     noteId: uuid.v4(),
     name: newNote.name,
+    language: newNote.language,
     createdAt,
     userId,
     done: false

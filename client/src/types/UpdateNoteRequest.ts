@@ -3,4 +3,5 @@ export interface UpdateNoteRequest {
   createdAt?: string
   done?: boolean
   attachmentName?: string
+  language?: string
 }

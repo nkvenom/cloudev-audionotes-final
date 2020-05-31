@@ -10,12 +10,13 @@ const transcribeService = new XAWS.TranscribeService()
 const VALID_EXT_REGEXP = /(mp3|mp4|flac|wav)$/
 const transcriptionBucket = process.env.TRANSCRIPTION_S3_BUCKET
 const audioBucket = process.env.ATTACHMENTS_S3_BUCKET
+
 export const handler: S3Handler = async (event: S3Event): Promise<void> => {
   const records = event.Records
 
   logger.error('processing', { records: records.length })
   for (const rec of records) {
-    const [noteId, fName] = rec.s3.object.key.split('/')
+    const [noteId, language, fName] = rec.s3.object.key.split('/')
     const recordUrl = `https://s3.amazonaws.com/${
       audioBucket}/${
       rec.s3.object.key
@@ -33,7 +34,7 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
     logger.info({ dateSuffix })
 
     const transcribeParams = {
-      LanguageCode: process.env.LANGUAGE_CODE,
+      LanguageCode: language,
       Media: { MediaFileUri: recordUrl },
       MediaFormat: mediaFormat,
       TranscriptionJobName: `${noteId}_${dateSuffix}`,
