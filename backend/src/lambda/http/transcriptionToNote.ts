@@ -1,7 +1,7 @@
 import { S3Event, S3Handler } from 'aws-lambda'
 import 'source-map-support/register'
 import { createLogger } from '../../utils/logger'
-import { getPhrasesFromTranscript } from '../../utils/trascriptToSrt'
+import { getRawJsonFromTranscript } from '../../utils/trascriptToSrt'
 import * as AWSXRay from 'aws-xray-sdk'
 import * as AWS from 'aws-sdk'
 import { updateNoteAny } from '../../dataLayer/noteAccess'
@@ -35,7 +35,7 @@ export const handler: S3Handler = async (event: S3Event): Promise<void> => {
 
     const transcriptJson = JSON.parse(fContents.Body.toString('utf8'))
     const transcription = transcriptJson.results.transcripts.map(t => t.transcript).join('\n')
-    const subsRaw = getPhrasesFromTranscript(transcriptJson)
+    const subsRaw = getRawJsonFromTranscript(transcriptJson)
 
     logger.info("updating", { noteId })
     await updateNoteAny(noteId, { transcription, subsRaw })
