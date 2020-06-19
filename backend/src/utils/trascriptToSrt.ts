@@ -14,7 +14,7 @@ function getTimeCode(durationSecs: number): string {
     // Format and return a string that contains the converted number of seconds into SRT format
     const hours = Math.floor(durationSecs / 3600);
     const minutes = Math.floor((durationSecs - (hours * 3600)) / 60);
-    const seconds = durationSecs - (hours * 3600) - (minutes * 60);
+    const seconds = Math.floor(durationSecs - (hours * 3600) - (minutes * 60));
     const millis = Math.round(durationSecs % 1 * 1000);
 
     return `${

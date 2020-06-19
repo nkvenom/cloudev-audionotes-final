@@ -7,4 +7,5 @@ export interface Note {
   attachmentName?: string
   transcription?: string
   language?: string
+  subsRaw?: any[]
 }

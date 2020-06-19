@@ -179,7 +179,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {note.transcription && <div><h3>Transcription</h3><p>{note.transcription}</p></div>}
+              {note.transcription && <div><h3>Transcription</h3><p>{note.transcription && note.transcription.slice(0, 100)}</p></div>}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

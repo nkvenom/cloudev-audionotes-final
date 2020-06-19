@@ -108,6 +108,37 @@ export class EditNote extends React.PureComponent<
     this.setState({ blobURL, recordedFile, isRecording: false })
   }
 
+  handleDownloadSrt = async () => {
+    console.log('Generating SRT');
+
+    const { note: { attachmentName, subsRaw = [] } = {} } = this.state
+
+    let srtPayload = '';
+    for (const [i, phrase] of subsRaw.entries()) {
+      srtPayload += `${i + 1}\n`
+      srtPayload += `${phrase.startTime} --> ${phrase.endTime}\n`
+      srtPayload += `${phrase.text}\n`
+      srtPayload += `\n`
+    }
+
+    this.download(`${attachmentName || 'subtitles'}.srt`, srtPayload)
+  }
+
+  download(filename: string, text: string) {
+    const link = document.createElement('a');
+    link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    link.setAttribute('download', filename);
+
+    if (document.createEvent) {
+        const event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        link.dispatchEvent(event);
+    }
+    else {
+        link.click();
+    }
+}  
+
   handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
 
@@ -202,7 +233,16 @@ export class EditNote extends React.PureComponent<
           </div>
         </div>
 
-        <h2>Transcription</h2>
+        <h2>Transcript</h2>
+        <Button
+          type="button"
+          circular
+          icon
+          color={"linkedin"}
+          onClick={this.handleDownloadSrt}
+        >
+          SRT
+          </Button>
         <p>
           {note && note.transcription}
         </p>
