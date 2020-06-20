@@ -111,7 +111,7 @@ export class EditNote extends React.PureComponent<
   handleDownloadSrt = async () => {
     console.log('Generating SRT');
 
-    const { note: { attachmentName, subsRaw = [] } = {} } = this.state
+    const { note: { attachmentName = '', subsRaw = [] } = {} } = this.state
 
     let srtPayload = '';
     for (const [i, phrase] of subsRaw.entries()) {
@@ -244,7 +244,13 @@ export class EditNote extends React.PureComponent<
           SRT
           </Button>
         <p>
-          {note && note.transcription}
+          {note && Array.isArray(note.subsRaw) &&
+            note.subsRaw.map(phrase => <div className="sub-phrase">
+              <div className="start-time">{phrase.startTime}</div>
+              <div className="end-time">{phrase.endTime}</div>
+              <div className="phrase-text">{phrase.text}</div>
+            </div>)
+          }
         </p>
 
         <h2>Or Upload an Audio File</h2>
