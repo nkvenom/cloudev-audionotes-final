@@ -31,11 +31,17 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
     this.setState({ newNoteName: event.target.value })
   }
 
+  handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      this.createNote(event)
+    }
+  }
+
   onEditButtonClick = (noteId: string, note: Note) => {
     this.props.history.push(`/notes/${noteId}/edit`)
   }
 
-  onNoteCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  async createNote(event: any) {
     try {
       if (!this.state.newNoteName || !this.state.newNoteName.trim()) {
         alert('Enter some Text in the input box')
@@ -53,6 +59,10 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
     } catch {
       alert('Note creation failed')
     }
+  }
+
+  onNoteCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+    this.createNote(event)
   }
 
   onNoteDelete = async (noteId: string) => {
@@ -108,6 +118,7 @@ export class Notes extends React.PureComponent<NotesProps, NotesState> {
               placeholder="Someting somethin"
               value={this.state.newNoteName}
               onChange={this.handleNameChange}
+              onKeyDown={this.handleKeyDown}
             />
           </Grid.Column>
         </Grid.Row>
